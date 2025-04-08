@@ -18,6 +18,8 @@
       href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
       rel="stylesheet"
     />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -27,9 +29,13 @@
           <nav class="py-2 d-flex justify-content-evenly row m-0">
             <!-- Brand name-->
             <div
-              class="nav-header d-flex justify-content-evenly col-12 col-md-3"
+              class="nav-header d-flex justify-content-center col-12 col-md-3"
             >
-              <h4 class="text-white roboto text-black-50">Cruise Care</h4>
+              <h4
+                class="text-white roboto text-black-50 d-flex justify-content-center align-items-center"
+              >
+                Cruise Care
+              </h4>
             </div>
             <!-- menu icon-->
             <!-- Menu button -->
@@ -96,7 +102,7 @@
                   <i class="bi bi-people"></i> Customers
                 </li>
                 <li class="navs d-flex align-items-center gap-2 p-3 dm-sans">
-                  <i class="bi bi-wrench"></i> Mechanics
+                  <i class="bi bi-car-front-fill"></i> Vehicles
                 </li>
                 <li class="navs d-flex align-items-center gap-2 p-3 dm-sans">
                   <i class="bi bi-tools"></i> Services
@@ -105,7 +111,7 @@
                   <i class="bi bi-calendar-check"></i> Schedules
                 </li>
                 <li class="navs d-flex align-items-center gap-2 p-3 dm-sans">
-                  <i class="bi bi-car-front-fill"></i> Vehicles
+                  <i class="bi bi-gear"></i> Mechanics
                 </li>
               </ul>
             </div>
@@ -155,45 +161,54 @@
             <div class="stats-grid">
               <div class="stat-card">
                 <div class="stat-header">
-                  <span class="stat-title title-managing">🟦 Managing</span>
+                  <span class="stat-title title-managing">👤 Customers </span>
                 </div>
                 <div class="stat-values">
                   <div>
-                    <strong>5</strong>
-                    <div class="stat-label">Stations</div>
+                    <span id="customer-count">Loading...</span>
+                    <div class="stat-label">Total</div>
                   </div>
                 </div>
               </div>
 
               <div class="stat-card">
                 <div class="stat-header">
-                  <span class="stat-title title-current">🟩 Currently</span>
+                  <span class="stat-title title-current">🚗 Vehicles </span>
                 </div>
                 <div class="stat-values">
                   <div>
-                    <strong>3</strong>
-                    <div class="stat-label">In Use</div>
+                    <span id="vehicle-count">Loading...</span>
+                    <div class="stat-label">Total</div>
                   </div>
                 </div>
               </div>
 
               <div class="stat-card">
                 <div class="stat-header">
-                  <span class="stat-title title-consumed">🟥 Consumed</span>
+                  <span class="stat-title title-consumed"> 🛠️ Services </span>
                 </div>
                 <div class="stat-single">
-                  <strong>2589</strong>
-                  <div class="stat-label">Kw</div>
+                  <span id="service-count">Loading...</span>
+                  <div class="stat-label">Total</div>
                 </div>
               </div>
 
               <div class="stat-card">
                 <div class="stat-header">
-                  <span class="stat-title title-income">💲 Income</span>
+                  <span class="stat-title title-income">📅 Schedules </span>
                 </div>
                 <div class="stat-single">
-                  <strong>$584</strong>
-                  <div class="stat-label">Earned</div>
+                  <span id="schedule-count">Loading...</span>
+                  <div class="stat-label">Total</div>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-header">
+                  <span class="stat-title title-income">🧑‍🔧 Mechanics </span>
+                </div>
+                <div class="stat-single">
+                  <span id="mechanic-count">Loading...</span>
+                  <div class="stat-label">Total</div>
                 </div>
               </div>
             </div>
@@ -346,6 +361,26 @@
 
       updateDate();
       fetchWeatherData();
+
+      window.addEventListener("DOMContentLoaded", () => {
+        fetch("https://the-automobile-management-system.onrender.com  /")
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById("customer-count").textContent =
+              data.max_customers ?? 0;
+            document.getElementById("vehicle-count").textContent =
+              data.max_vehicles ?? 0;
+            document.getElementById("service-count").textContent =
+              data.max_service_records ?? 0;
+            document.getElementById("schedule-count").textContent =
+              data.max_schedules ?? 0;
+            document.getElementById("mechanic-count").textContent =
+              data.max_mechanics ?? 0;
+          })
+          .catch((err) => {
+            console.error("Error fetching counts:", err);
+          });
+      });
     </script>
   </body>
 </html>

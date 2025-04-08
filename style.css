@@ -9,6 +9,10 @@
   margin-right: 10px;
 }
 
+nav {
+  height: 100px;
+}
+
 h4 {
   width: auto;
   display: inline-block;
@@ -118,8 +122,8 @@ html {
 
 .navs:hover {
   transform: translateY(-3px) scale(1);
-  box-shadow: 0px 0px 10px rgba(148, 57, 239, 0.403);
-  background-color: rgba(246, 188, 188, 0.15); /* optional for light hover */
+  box-shadow: 0px 0px 10px rgba(51, 51, 52, 0.403);
+  background-color: rgba(110, 110, 110, 0.121); /* optional for light hover */
 }
 
 .navs > i {
