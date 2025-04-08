@@ -139,11 +139,11 @@
                   </div>
 
                   <div class="display-header">
-                    <span>Messadine, Susah<br />Tunisia</span>
-                    <span>March 13</span>
+                    <span class="location">Loading...</span>
+                    <span class="date"></span>
                   </div>
 
-                  <span class="current-temp">23°</span>
+                  <span class="current-temp">--°</span>
 
                   <div class="temp-unit">
                     <span>Celcius</span>
@@ -274,6 +274,78 @@
 
       // Optionally, update the time every second (1000 milliseconds)
       setInterval(updateDateTime, 1000);
+      const locationElement = document.querySelector(".location");
+      const dateElement = document.querySelector(".date");
+      const tempElement = document.querySelector(".current-temp");
+      const openCageApiKey = "3a21d953dd87459abd92b9890e52d0fb"; // Your API key
+
+      function updateDate() {
+        const now = new Date();
+        const options = { year: "numeric", month: "long", day: "numeric" };
+        dateElement.textContent = now.toLocaleDateString(undefined, options);
+      }
+
+      async function fetchWeatherData() {
+        try {
+          // First, try to get the user's location
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+              async (position) => {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+
+                // Use a reverse geocoding service to get the city and country
+                const geoApiUrl = `https://api.opencagedata.com/geocode/v1/json?q=${latitude},${longitude}&key=3a21d953dd87459abd92b9890e52d0fb&language=en`;
+                const geoResponse = await fetch(geoApiUrl);
+                const geoData = await geoResponse.json();
+
+                if (geoData.results && geoData.results.length > 0) {
+                  const city =
+                    geoData.results[0].components.city ||
+                    geoData.results[0].components.town ||
+                    geoData.results[0].components.village;
+                  const country = geoData.results[0].components.country;
+                  locationElement.textContent = `${city}, ${country}`;
+
+                  // Now fetch the weather data based on the coordinates
+                  const weatherApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&temperature_unit=celsius&timezone=Africa/Lagos`;
+                  const weatherResponse = await fetch(weatherApiUrl);
+                  const weatherData = await weatherResponse.json();
+
+                  if (
+                    weatherData.current &&
+                    weatherData.current.temperature_2m !== undefined
+                  ) {
+                    tempElement.textContent = `${weatherData.current.temperature_2m}°`;
+                  } else {
+                    tempElement.textContent = "Error";
+                  }
+                } else {
+                  locationElement.textContent = "Location not found";
+                  tempElement.textContent = "Error";
+                }
+              },
+              (error) => {
+                console.error("Error getting location:", error);
+                locationElement.textContent = "Location access denied";
+                tempElement.textContent = "Error";
+                // Optionally, you could try a fallback to a default location or IP-based lookup here
+              }
+            );
+          } else {
+            locationElement.textContent = "Geolocation not supported";
+            tempElement.textContent = "Error";
+            // Optionally, you could try a fallback to a default location or IP-based lookup here
+          }
+        } catch (error) {
+          console.error("Error fetching data:", error);
+          locationElement.textContent = "Error";
+          tempElement.textContent = "Error";
+        }
+      }
+
+      updateDate();
+      fetchWeatherData();
     </script>
   </body>
 </html>
