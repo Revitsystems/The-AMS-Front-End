@@ -142,7 +142,7 @@ updateDate();
 fetchWeatherData();
 
 window.addEventListener("DOMContentLoaded", () => {
-  fetch("http://localhost:5000/")
+  fetch("https://the-automobile-management-system.onrender.com/")
     .then((response) => response.json())
     .then((data) => {
       console.log("Data received from backend:", data);
@@ -202,10 +202,4 @@ window.addEventListener("DOMContentLoaded", () => {
       errorRow.innerHTML = `<td colspan="7">Error loading customer and vehicle data.</td>`;
       customerVehicleTableBody.appendChild(errorRow);
     });
-});
-/************************** */
-// The customer update part
-/************************** */
-document.addEventListener("DOMContentLoaded", () => {
-  // ... (your existing createCustomer and updateCustomer functions remain the same) ...
 });
