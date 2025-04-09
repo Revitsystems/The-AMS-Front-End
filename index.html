@@ -99,19 +99,25 @@
             <div class="sidebar-content">
               <ul class="list-unstyled m-0">
                 <li class="navs d-flex align-items-center gap-2 p-3 dm-sans">
-                  <i class="bi bi-people"></i> Customers
+                  <i class="bi bi-house"></i><a href="index.html">Home</a>
                 </li>
                 <li class="navs d-flex align-items-center gap-2 p-3 dm-sans">
-                  <i class="bi bi-car-front-fill"></i> Vehicles
+                  <i class="bi bi-people"></i
+                  ><a href="customer.html">Customers</a>
                 </li>
                 <li class="navs d-flex align-items-center gap-2 p-3 dm-sans">
-                  <i class="bi bi-tools"></i> Services
+                  <i class="bi bi-car-front-fill"></i>
+                  <a href="index.html">Vehicles</a>
                 </li>
                 <li class="navs d-flex align-items-center gap-2 p-3 dm-sans">
-                  <i class="bi bi-calendar-check"></i> Schedules
+                  <i class="bi bi-tools"></i><a href="index.html">Services</a>
                 </li>
                 <li class="navs d-flex align-items-center gap-2 p-3 dm-sans">
-                  <i class="bi bi-gear"></i> Mechanics
+                  <i class="bi bi-calendar-check"></i
+                  ><a href="index.html">Schedules</a>
+                </li>
+                <li class="navs d-flex align-items-center gap-2 p-3 dm-sans">
+                  <i class="bi bi-gear"></i> <a href="index.html">Mechanics</a>
                 </li>
               </ul>
             </div>
@@ -212,175 +218,28 @@
                 </div>
               </div>
             </div>
+            <div class="table-holder">
+              <h4>Customer and their cars Information</h4>
+
+              <table class="tab" id="customer-vehicle-table">
+                <thead>
+                  <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Phone Number</th>
+                    <th>Email</th>
+                    <th>Make</th>
+                    <th>Model</th>
+                    <th>Year</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
     </section>
-    <script>
-      const sidebar = document.getElementById("sidebar");
-      const toggleBtn = document.getElementById("toggleSidebar");
-
-      toggleBtn.addEventListener("click", () => {
-        sidebar.classList.toggle("collapsed");
-      });
-      function updateDateTime() {
-        const now = new Date();
-
-        // Get the time components
-        let hours = now.getHours();
-        const minutes = String(now.getMinutes()).padStart(2, "0");
-        const ampm = hours >= 12 ? "PM" : "AM";
-        hours = hours % 12 || 12; // Convert to 12-hour format
-
-        // Get the day and date components
-        const days = [
-          "Sunday",
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday",
-        ];
-        const day = days[now.getDay()];
-        const date = now.getDate();
-
-        // Function to get the ordinal suffix for the date
-        function getOrdinalSuffix(n) {
-          const s = ["th", "st", "nd", "rd"];
-          const v = n % 100;
-          return s[(v - 20) % 10] || s[v] || s[0];
-        }
-
-        const dateWithSuffix = date + getOrdinalSuffix(date);
-
-        // Update the HTML elements
-        document.querySelector(
-          ".time-text span:first-child"
-        ).textContent = `${hours}:${minutes}`;
-        document.querySelector(".time-text .time-sub-text").textContent = ampm;
-        document.querySelector(
-          ".day-text"
-        ).textContent = `${day}, ${getMonthName(
-          now.getMonth()
-        )} ${dateWithSuffix}`;
-      }
-
-      function getMonthName(monthIndex) {
-        const months = [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-          "August",
-          "September",
-          "October",
-          "November",
-          "December",
-        ];
-        return months[monthIndex];
-      }
-
-      // Call the function to update the time and date when the page loads
-      updateDateTime();
-
-      // Optionally, update the time every second (1000 milliseconds)
-      setInterval(updateDateTime, 1000);
-      const locationElement = document.querySelector(".location");
-      const dateElement = document.querySelector(".date");
-      const tempElement = document.querySelector(".current-temp");
-      const openCageApiKey = "3a21d953dd87459abd92b9890e52d0fb"; // Your API key
-
-      function updateDate() {
-        const now = new Date();
-        const options = { year: "numeric", month: "long", day: "numeric" };
-        dateElement.textContent = now.toLocaleDateString(undefined, options);
-      }
-
-      async function fetchWeatherData() {
-        try {
-          // First, try to get the user's location
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-              async (position) => {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
-
-                // Use a reverse geocoding service to get the city and country
-                const geoApiUrl = `https://api.opencagedata.com/geocode/v1/json?q=${latitude},${longitude}&key=3a21d953dd87459abd92b9890e52d0fb&language=en`;
-                const geoResponse = await fetch(geoApiUrl);
-                const geoData = await geoResponse.json();
-
-                if (geoData.results && geoData.results.length > 0) {
-                  const city =
-                    geoData.results[0].components.city ||
-                    geoData.results[0].components.town ||
-                    geoData.results[0].components.village;
-                  const country = geoData.results[0].components.country;
-                  locationElement.textContent = `${city}, ${country}`;
-
-                  // Now fetch the weather data based on the coordinates
-                  const weatherApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&temperature_unit=celsius&timezone=Africa/Lagos`;
-                  const weatherResponse = await fetch(weatherApiUrl);
-                  const weatherData = await weatherResponse.json();
-
-                  if (
-                    weatherData.current &&
-                    weatherData.current.temperature_2m !== undefined
-                  ) {
-                    tempElement.textContent = `${weatherData.current.temperature_2m}°`;
-                  } else {
-                    tempElement.textContent = "Error";
-                  }
-                } else {
-                  locationElement.textContent = "Location not found";
-                  tempElement.textContent = "Error";
-                }
-              },
-              (error) => {
-                console.error("Error getting location:", error);
-                locationElement.textContent = "Location access denied";
-                tempElement.textContent = "Error";
-                // Optionally, you could try a fallback to a default location or IP-based lookup here
-              }
-            );
-          } else {
-            locationElement.textContent = "Geolocation not supported";
-            tempElement.textContent = "Error";
-            // Optionally, you could try a fallback to a default location or IP-based lookup here
-          }
-        } catch (error) {
-          console.error("Error fetching data:", error);
-          locationElement.textContent = "Error";
-          tempElement.textContent = "Error";
-        }
-      }
-
-      updateDate();
-      fetchWeatherData();
-
-      window.addEventListener("DOMContentLoaded", () => {
-        fetch("https://the-automobile-management-system.onrender.com  /")
-          .then((response) => response.json())
-          .then((data) => {
-            document.getElementById("customer-count").textContent =
-              data.max_customers ?? 0;
-            document.getElementById("vehicle-count").textContent =
-              data.max_vehicles ?? 0;
-            document.getElementById("service-count").textContent =
-              data.max_service_records ?? 0;
-            document.getElementById("schedule-count").textContent =
-              data.max_schedules ?? 0;
-            document.getElementById("mechanic-count").textContent =
-              data.max_mechanics ?? 0;
-          })
-          .catch((err) => {
-            console.error("Error fetching counts:", err);
-          });
-      });
-    </script>
+    <script src="./script.js"></script>
   </body>
 </html>
