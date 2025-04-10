@@ -11,6 +11,11 @@
 
 a {
   text-decoration: none;
+  color: #00c8ff7d;
+}
+
+.care {
+  color: #00c8ff7d;
 }
 
 nav {
@@ -39,22 +44,24 @@ html {
 }
 
 .sidebar {
-  width: 300px;
+  width: 0px;
   color: #fff;
   transition: all 0.3s ease;
   overflow: hidden;
   padding-right: 10px;
+  border-right: 1px solid #00c8ff7d;
 }
 
 /* Sidebar when collapsed */
 .sidebar.collapsed {
-  width: 0px; /* Leaves part of it visible */
+  transition: all 0.5s ease;
+  width: 300px; /* Leaves part of it visible */
 }
 @media (max-width: 1000px) {
   .sidebar {
     position: absolute;
     top: 12 0px;
-    left: 0;
+    left: -100%;
     width: 100%;
     padding: 0 5px 0 5px;
     height: 100%;
@@ -63,7 +70,7 @@ html {
   }
 
   .sidebar.collapsed {
-    left: -100%;
+    left: 0%;
   }
 }
 /* Sidebar content to fade out on collapse if needed */
@@ -532,10 +539,11 @@ body {
 }
 
 h2 {
-  color: #007bff;
+  color: #00c8ff7d;
   margin-bottom: 15px;
   border-bottom: 2px solid #eee;
   padding-bottom: 10px;
+  font-family: "nunito";
 }
 #search-mechanic,
 #new-mechanic,

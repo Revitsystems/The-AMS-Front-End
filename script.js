@@ -3,6 +3,21 @@ const toggleBtn = document.getElementById("toggleSidebar");
 
 toggleBtn.addEventListener("click", () => {
   sidebar.classList.toggle("collapsed");
+}); // Get all the links inside the sidebar (adjust the selector based on your HTML)
+const sidebarLinks = document.querySelectorAll("a");
+
+// Add an event listener to each link
+sidebarLinks.forEach((link) => {
+  link.addEventListener("click", () => {
+    // Optionally, you might want to prevent the default navigation first
+    // event.preventDefault();
+
+    // Hide the sidebar by removing the 'sidebar-open' class
+    sidebar.classList.remove("collapsed");
+
+    // If you prevented the default navigation, you would then navigate manually
+    // window.location.href = link.getAttribute('href');
+  });
 });
 function updateDateTime() {
   const now = new Date();
