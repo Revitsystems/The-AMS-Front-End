@@ -118,30 +118,31 @@
                 </li>
                 <li class="navs d-flex align-items-center gap-2 p-3 dm-sans">
                   <i class="bi bi-gear"></i>
-                  <a href="mechanic.html">Mechanics</a>
+                  <a href="vehicle.html">Mechanics</a>
                 </li>
               </ul>
             </div>
           </div>
 
           <!-- Main content -->
+
           <div class="content" id="content">
             <div class="stats-grid small-screen">
               <div class="container">
-                <section id="new-customer">
-                  <h2>Add/Update Customer</h2>
-                  <form id="customer-form">
+                <section id="new-mechanic">
+                  <h2>Add/Update Mechanic</h2>
+                  <form id="mechanic-form">
                     <div class="row">
                       <div class="col-12 col-md-6">
                         <div class="form-group">
-                          <label for="customer-id-update"
-                            >Customer ID (for Update):</label
+                          <label for="mechanic-id-update"
+                            >Mechanic ID (for Update):</label
                           >
                           <input
                             type="number"
                             class="form-control"
-                            id="customer-id-update"
-                            name="customer-id-update"
+                            id="mechanic-id-update"
+                            name="mechanic_id"
                             placeholder="Enter ID to update"
                           />
                         </div>
@@ -151,6 +152,7 @@
                       <label for="first-name">First Name:</label>
                       <input
                         type="text"
+                        class="form-control"
                         id="first-name"
                         name="fname"
                         required
@@ -158,12 +160,19 @@
                     </div>
                     <div class="form-group">
                       <label for="last-name">Last Name:</label>
-                      <input type="text" id="last-name" name="lname" required />
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="last-name"
+                        name="lname"
+                        required
+                      />
                     </div>
                     <div class="form-group">
                       <label for="phone">Phone Number:</label>
                       <input
                         type="tel"
+                        class="form-control"
                         id="phone"
                         name="phone_number"
                         required
@@ -173,31 +182,32 @@
                       <label for="email">Email Address:</label>
                       <input
                         type="email"
+                        class="form-control"
                         id="email"
                         name="email_address"
                         required
                       />
                     </div>
                     <button
-                      class="save"
+                      class="save btn btn-success mt-3"
                       type="button"
-                      onclick="createCustomer()"
+                      onclick="addMechanic()"
                     >
-                      Add Customer
+                      Add Mechanic
                     </button>
                     <button
-                      class="update mt-3"
+                      class="update mt-3 btn btn-primary"
                       type="button"
-                      onclick="updateCustomer()"
+                      onclick="updateMechanicInfo()"
                     >
-                      Update Customer
+                      Update Mechanic
                     </button>
                   </form>
                   <div id="submission-status" class="status-message"></div>
                 </section>
 
-                <section id="search-customer">
-                  <h2>Find Existing Customer</h2>
+                <section id="search-mechanic">
+                  <h2>Find Existing Mechanic</h2>
                   <div
                     class="search-bar d-flex flex-column flex-sm-row align-items-center"
                   >
@@ -207,27 +217,15 @@
                       id="search-input"
                       placeholder="Enter name, ID, last name, email, or phone"
                     />
-                    <button id="search-button" class="btn btn-primary">
+                    <button
+                      id="search-button"
+                      class="btn btn-primary"
+                      onclick="searchMechanic()"
+                    >
                       Search
                     </button>
                   </div>
                   <div id="search-results"></div>
-                </section>
-
-                <section id="search-customer-car">
-                  <h2>Find Customer Cars</h2>
-                  <div
-                    class="search-bar d-flex flex-column flex-sm-row align-items-center"
-                  >
-                    <input
-                      type="text"
-                      class="form-control mb-2 mb-sm-0 me-sm-2"
-                      id="customerid-search-input"
-                      placeholder="Enter customer ID"
-                    />
-                    <button id="getCar" class="btn btn-primary">Search</button>
-                  </div>
-                  <div id="getResult"></div>
                 </section>
               </div>
             </div>
@@ -236,19 +234,25 @@
       </div>
     </section>
     <script>
-      async function createCustomer() {
-        const form = document.getElementById("customer-form");
+      async function addMechanic() {
+        const form = document.getElementById("mechanic-form");
         const statusDiv = document.getElementById("submission-status");
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
 
-        // Display loading state
-        statusDiv.textContent = "Creating customer...";
+        // Trim input values
+        for (const key in data) {
+          if (typeof data[key] === "string") {
+            data[key] = data[key].trim();
+          }
+        }
+
+        statusDiv.textContent = "Adding mechanic...";
         statusDiv.className = "status-message loading";
 
         try {
           const response = await fetch(
-            "https://the-automobile-management-system.onrender.com/new_customer",
+            "https://the-automobile-management-system.onrender.com/add_mechanic",
             {
               method: "POST",
               headers: {
@@ -264,69 +268,61 @@
             statusDiv.textContent = result.message;
             statusDiv.className = "status-message success";
             form.reset();
+            console.log("Mechanic added:", result.mechanic);
+          } else if (response.status === 400) {
+            statusDiv.textContent = result.error;
+            statusDiv.className = "status-message error";
+          } else if (response.status === 409) {
+            statusDiv.textContent = result.message;
+            statusDiv.className = "status-message warning";
+            console.log("Existing mechanic:", result.mechanic);
           } else {
-            statusDiv.textContent = result.error || "Failed to add customer.";
+            statusDiv.textContent = "Failed to add mechanic.";
             statusDiv.className = "status-message error";
           }
         } catch (error) {
-          console.error("Error creating customer:", error);
+          console.error("Error adding mechanic:", error);
           statusDiv.textContent = "Network error occurred.";
           statusDiv.className = "status-message error";
         } finally {
-          // Optional: Remove the loading class after the operation completes
-          // statusDiv.classList.remove('loading');
+          statusDiv.classList.remove("loading");
         }
       }
-      async function updateCustomer() {
-        const form = document.getElementById("customer-form");
-        const statusDiv = document.getElementById("submission-status");
-        const customerIdInput = document.getElementById("customer-id-update");
-        const customer_id = customerIdInput.value;
 
-        if (!customer_id) {
-          statusDiv.textContent = "Please enter a Customer ID to update.";
-          statusDiv.className = "status-message error";
+      async function updateMechanicInfo() {
+        const form = document.getElementById("mechanic-form");
+        const statusDiv = document.getElementById("submission-status");
+        const mechanicIdInput = document.getElementById("mechanic-id-update");
+        const mechanicId = mechanicIdInput.value.trim();
+
+        if (!mechanicId) {
+          statusDiv.textContent = "Please enter a Mechanic ID to update.";
+          statusDiv.className = "status-message warning";
           return;
         }
 
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
-        const updateData = {};
 
-        if (data.fname) {
-          updateData.fname = data.fname;
-        }
-        if (data.lname) {
-          updateData.lname = data.lname;
-        }
-        if (data.phone_number) {
-          updateData.phone_number = data.phone_number;
-        }
-        if (data.email_address) {
-          updateData.email_address = data.email_address;
+        // Trim input values
+        for (const key in data) {
+          if (typeof data[key] === "string") {
+            data[key] = data[key].trim();
+          }
         }
 
-        if (Object.keys(updateData).length === 0) {
-          statusDiv.textContent = "No fields to update.";
-          statusDiv.className = "status-message info";
-          return;
-        }
-
-        console.log("Sending update data:", updateData); // Log the correct body
-
-        // Display loading state
-        statusDiv.textContent = "Updating customer...";
+        statusDiv.textContent = "Updating mechanic...";
         statusDiv.className = "status-message loading";
 
         try {
           const response = await fetch(
-            `https://the-automobile-management-system.onrender.com/update_customer/${customer_id}`,
+            `https://the-automobile-management-system.onrender.com/${mechanicId}`,
             {
               method: "PATCH",
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify(updateData),
+              body: JSON.stringify(data),
             }
           );
 
@@ -335,133 +331,68 @@
           if (response.ok) {
             statusDiv.textContent = result.message;
             statusDiv.className = "status-message success";
-            form.reset();
-            customerIdInput.value = ""; // Clear the ID field after successful update
+            console.log("Mechanic updated:", result.customer); // Corrected log
+          } else if (response.status === 400) {
+            statusDiv.textContent = result.error;
+            statusDiv.className = "status-message error";
+          } else if (response.status === 404) {
+            statusDiv.textContent = result.error;
+            statusDiv.className = "status-message error";
           } else {
-            statusDiv.textContent =
-              result.error || "Failed to update customer.";
+            statusDiv.textContent = "Failed to update mechanic.";
             statusDiv.className = "status-message error";
           }
         } catch (error) {
-          console.error("Error updating customer:", error);
+          console.error("Error updating mechanic:", error);
           statusDiv.textContent = "Network error occurred.";
           statusDiv.className = "status-message error";
         } finally {
-          // Optional: Remove the loading class after the operation completes
-          // statusDiv.classList.remove('loading');
+          statusDiv.classList.remove("loading");
         }
       }
-      const searchButton = document.getElementById("search-button");
-      const searchInput = document.getElementById("search-input");
-      const searchResultsContainer = document.getElementById("search-results");
 
-      searchButton.addEventListener("click", async function () {
+      async function searchMechanic() {
+        const searchInput = document.getElementById("search-input");
+        const searchResultsDiv = document.getElementById("search-results");
         const searchTerm = searchInput.value.trim();
 
-        if (searchTerm) {
-          searchResultsContainer.innerHTML =
-            '<p class="loading">Searching...</p>';
-
-          try {
-            const response = await fetch(
-              `https://the-automobile-management-system.onrender.com/customers/${encodeURIComponent(
-                searchTerm
-              )}`
-            );
-            console.log("sent requets");
-            const result = await response.json();
-
-            searchResultsContainer.innerHTML = ""; // Clear previous results
-
-            if (response.ok) {
-              if (result.customers && result.customers.length > 0) {
-                const resultsList = document.createElement("ul");
-                result.customers.forEach((customer) => {
-                  const listItem = document.createElement("li");
-                  listItem.textContent = `${customer.fname} ${customer.lname} - ID: ${customer.customer_id}, Phone: ${customer.phone_number}, Email: ${customer.email_address}`;
-                  resultsList.appendChild(listItem);
-                });
-                searchResultsContainer.appendChild(resultsList);
-              } else {
-                searchResultsContainer.innerHTML =
-                  '<p class="no-results">No customers found matching your criteria.</p>';
-              }
-            } else if (response.status === 404) {
-              searchResultsContainer.innerHTML =
-                '<p class="no-results">No customers found matching your criteria.</p>';
-            } else {
-              searchResultsContainer.innerHTML = `<p class="error">Error: ${
-                result.message || "Failed to fetch customers."
-              }</p>`;
-            }
-          } catch (error) {
-            console.error("Error fetching customers:", error);
-            searchResultsContainer.innerHTML =
-              '<p class="error">Network error occurred while searching.</p>';
-          }
-        } else {
-          searchResultsContainer.textContent = "Please enter a search term.";
+        if (!searchTerm) {
+          searchResultsDiv.textContent = "Please enter a search term.";
+          return;
         }
-      });
-      document.addEventListener("DOMContentLoaded", () => {
-        const searchButton = document.getElementById("getCar");
-        const customerIdInput = document.getElementById(
-          "customerid-search-input"
-        );
-        const resultsDiv = document.getElementById("getResult");
 
-        searchButton.addEventListener("click", async () => {
-          const customerId = customerIdInput.value.trim();
+        searchResultsDiv.textContent = "Searching...";
 
-          if (customerId) {
-            // Display a loading message
-            resultsDiv.innerHTML = "<p>Loading vehicle data...</p>";
-            resultsDiv.classList.add("loading"); // Add a loading class for styling
-
-            const apiUrl = `https://the-automobile-management-system.onrender.com/customers/${customerId}/vehicles`;
-
-            try {
-              const response = await fetch(apiUrl);
-              resultsDiv.classList.remove("loading"); // Remove loading class after response
-
-              if (response.ok) {
-                const vehicles = await response.json();
-
-                if (vehicles.length > 0) {
-                  let displayHTML = `<h5>Vehicles for Customer ID: ${customerId}</h5><ul>`;
-                  vehicles.forEach((vehicle) => {
-                    displayHTML += `<li>Make: ${vehicle.make}, Model: ${vehicle.model}, Year: ${vehicle.year}</li>`;
-                  });
-                  displayHTML += "</ul>";
-                  resultsDiv.innerHTML = displayHTML;
-                  resultsDiv.classList.add("success"); // Add a success class for styling
-                  resultsDiv.classList.remove("error");
-                } else {
-                  resultsDiv.innerHTML = `<p>No vehicles found for customer ID: ${customerId}</p>`;
-                  resultsDiv.classList.remove("success", "error");
-                }
-              } else if (response.status === 404) {
-                resultsDiv.innerHTML = `<p>Customer with ID ${customerId} not found or has no vehicles.</p>`;
-                resultsDiv.classList.add("error");
-                resultsDiv.classList.remove("success");
-              } else {
-                resultsDiv.innerHTML = `<p>Error: Could not retrieve vehicle information. Status: ${response.status}</p>`;
-                resultsDiv.classList.add("error");
-                resultsDiv.classList.remove("success");
-              }
-            } catch (error) {
-              console.error("Error fetching vehicles:", error);
-              resultsDiv.innerHTML =
-                "<p>Network error occurred while fetching vehicle information.</p>";
-              resultsDiv.classList.add("error");
-              resultsDiv.classList.remove("success", "loading");
-            }
-          } else {
-            resultsDiv.innerHTML = "<p>Please enter a customer ID.</p>";
-            resultsDiv.classList.remove("success", "error", "loading");
+        try {
+          const response = await fetch(
+            `https://the-automobile-management-system.onrender.com/search_mechanics?query=${encodeURIComponent(
+              searchTerm
+            )}`
+          );
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
           }
-        });
-      });
+          const data = await response.json();
+
+          searchResultsDiv.innerHTML = ""; // Clear previous results
+
+          if (data.length > 0) {
+            const ul = document.createElement("ul");
+            data.forEach((mechanic) => {
+              const li = document.createElement("li");
+              li.textContent = `ID: ${mechanic.mechanic_id}, Name: ${mechanic.fname} ${mechanic.lname}, Email: ${mechanic.email_address}, Phone: ${mechanic.phone_number}`;
+              ul.appendChild(li);
+            });
+            searchResultsDiv.appendChild(ul);
+          } else {
+            searchResultsDiv.textContent =
+              "No mechanics found matching your search criteria.";
+          }
+        } catch (error) {
+          console.error("Error searching mechanics:", error);
+          searchResultsDiv.textContent = "Error searching mechanics.";
+        }
+      }
     </script>
     <script src="./script.js"></script>
   </body>
