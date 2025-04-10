@@ -50,7 +50,7 @@ html {
 .sidebar.collapsed {
   width: 0px; /* Leaves part of it visible */
 }
-@media (max-width: 800px) {
+@media (max-width: 1000px) {
   .sidebar {
     position: absolute;
     top: 12 0px;
