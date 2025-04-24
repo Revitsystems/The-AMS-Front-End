@@ -413,7 +413,7 @@
                   const resultsList = document.createElement("ul");
                   result.vehicles.forEach((vehicle) => {
                     const listItem = document.createElement("li");
-                    listItem.textContent = `VIN: ${vehicle.vin}, Make: ${vehicle.make}, Model: ${vehicle.model}, Year: ${vehicle.year}, License Plate: ${vehicle.license_plate}, Customer ID: ${vehicle.customer_id}, Color: ${vehicle.color}`;
+                    listItem.textContent = `Vehicle ID: ${vehicle.vehicle_id}, VIN: ${vehicle.vin}, Make: ${vehicle.make}, Model: ${vehicle.model}, Year: ${vehicle.year}, License Plate: ${vehicle.license_plate}, Customer ID: ${vehicle.customer_id}, Color: ${vehicle.color}`;
                     resultsList.appendChild(listItem);
                   });
                   searchVehicleResultsDiv.innerHTML = ""; // Clear loading message
